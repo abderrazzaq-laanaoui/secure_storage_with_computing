@@ -18,8 +18,7 @@ def compare_values():
     id_1 = int(input("Choisissez l'id 1:"))
     id_2 = int(input("Choisissez l'id 2:"))
     # Send a GET request to the middleware to compare the values
-    response = requests.get(f"{base_url}/compare_values/{id_1}/{id_2}")
-    print("Le résultat de la comparaison est ", response.json())
+    response = requests.post(f"{base_url}/compare_values", json={"id1": id_1, "id2": id_2})    print("Le résultat de la comparaison est ", response.json())
 
 # Function to sum two values
 def sum_values():
@@ -27,8 +26,7 @@ def sum_values():
     id_1 = int(input("Choisissez l'id 1:"))
     id_2 = int(input("Choisissez l'id 2:"))
     # Send a GET request to the middleware to sum the values
-    response = requests.get(f"{base_url}/sum_values/{id_1}/{id_2}")
-    print("La somme des valeurs est ", response.json())
+    response = requests.post(f"{base_url}/sum_values", json={"id1": id_1, "id2": id_2})    print("La somme des valeurs est ", response.json())
 
 # Clear the console
 def clear_console():
