@@ -1,6 +1,6 @@
 import mysql.connector
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import json
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
 class DatabaseHost:
     def __init__(self, host, user, password, database):
@@ -46,48 +46,25 @@ class DatabaseHost:
         self.connection.commit()
         cursor.close()
 
-class RequestHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        # Connexion à la base de données
-        db_host = DatabaseHost(host="localhost", user="root", password="Ensibs@log2024", database="secret_db")
-        db_host.connect()
+app = FastAPI()
+db_host = DatabaseHost(host="localhost", user="root", password="Ensibs@log2024", database="secret_db")
+db_host.connect()
 
-        # Récupération des données depuis la table 'secret_data'
-        data = db_host.read_data(table="secret_data")
-        data_json = json.dumps(data)
+class Item(BaseModel):
+    arithmetic_value: str
+    binary_value: str
 
-        # Envoi de la réponse
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-        self.wfile.write(data_json.encode())
+@app.get("/")
+def read_root():
+    data = db_host.read(table="secret_data")
+    return data
 
-        # Déconnexion de la base de données
-        db_host.disconnect()
+@app.post("/")
+def create_item(item: Item):
+    db_host.write(table="secret_data", data=item.dict())
+    return item
 
-    def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
-        data = json.loads(post_data.decode())
-
-        db_host = DatabaseHost(host="localhost", user="root", password="Ensibs@log2024", database="secret_db")
-        db_host.connect()
-
-        db_host.write(table="secret_data", data=data)
-
-        self.send_response(201)
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-        self.wfile.write(json.dumps(data).encode())
-
-        db_host.disconnect()
-
-def run_server(port=8080):
-    server_address = ('', port)
-    httpd = HTTPServer(server_address, RequestHandler)
-    print(f"Serveur démarré sur le port {port}")
-    httpd.serve_forever()
-
-if __name__ == '__main__':
-    run_server()
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8080)
 
