@@ -2,8 +2,8 @@ import requests
 from pydantic import BaseModel
 
 class Hashes(BaseModel):
-    arithmetic_hash: str
-    binary_hash: str
+    arithmetic_value: str
+    binary_value: str
 
 class Item(BaseModel):
     id1: int
@@ -26,9 +26,9 @@ def compare(item: Item):
         hash2 = response2.json()
 
         # Compare the binary hashes
-        if hash1['binary_hash'] > hash2['binary_hash']:
+        if hash1['binary_value'] > hash2['binary_value']:
             return 1
-        elif hash1['binary_hash'] < hash2['binary_hash']:
+        elif hash1['binary_value'] < hash2['binary_value']:
             return -1
         else:
             return 0
@@ -44,7 +44,7 @@ def sum(item: Item):
         hash2 = response2.json()
 
         # Sum the arithmetic hashes
-        sum_hash = int(hash1['arithmetic_hash']) + int(hash2['arithmetic_hash'])
+        sum_hash = int(hash1['arithmetic_value']) + int(hash2['arithmetic_value'])
         return str(sum_hash)
     else:
         raise Exception("Invalid id(s)")

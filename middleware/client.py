@@ -11,7 +11,8 @@ app = FastAPI()
 public_key, private_key = paillier.generate_paillier_keypair()
 
 # Generate a key for OPE
-ope_key = OPE.generate_key()
+
+ope_key = OPE(OPE.generate_key())
 
 class Item(BaseModel):
     id1: int
@@ -20,11 +21,11 @@ class Item(BaseModel):
 @app.post("/add_value/{value}")
 def add_value(value: int):
     # Encrypt the value
-    arithmetic_hash = paillier_public_key.encrypt(value)
-    binary_hash = ope_key.encrypt(value)
+    arithmetic_value = public_key.encrypt(value)
+    binary_value = ope_key.encrypt(value)
 
     # Send the hashes to the host
-    hashes = host.Hashes(arithmetic_hash=str(arithmetic_hash), binary_hash=str(binary_hash))
+    hashes = host.Hashes(arithmetic_value=str(arithmetic_value), binary_value=str(binary_value))
     return host.add_hashes(hashes)
 
 @app.post("/compare_by_id")
