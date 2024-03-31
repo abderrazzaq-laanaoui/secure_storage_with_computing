@@ -19,8 +19,8 @@ def add_hashes(hashes: Hashes):
 
 def compare(item: Item):
     # Get the binary hashes for the ids from the database host
-    response1 = requests.get(f'http://localhost:8080/get/{item.id1}')
-    response2 = requests.get(f'http://localhost:8080/get/{item.id2}')
+    response1 = requests.get(f'http://localhost:8080/{item.id1}')
+    response2 = requests.get(f'http://localhost:8080/{item.id2}')
     if response1.status_code == 200 and response2.status_code == 200:
         hash1 = response1.json()
         hash2 = response2.json()
